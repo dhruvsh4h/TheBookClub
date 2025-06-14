@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual Environment
+venv/
+.venv/
+
+# Instance Folder (for database, etc.)
+instance/
+
+# OS-specific files
+.DS_StoreD
