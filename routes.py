@@ -349,7 +349,8 @@ def search_book():
                         'page_count': volume_info.get('pageCount', 0),
                         'cover_url': volume_info.get('imageLinks', {}).get('thumbnail')
                     }
-                    search_results.append(book_data)
+                    if book_data['page_count'] > 0:
+                        search_results.append(book_data)
         except requests.exceptions.RequestException as e:
             flash(f"Error calling Google Books API: {e}", 'danger')
 

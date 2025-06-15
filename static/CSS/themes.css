@@ -1,0 +1,27 @@
+/* static/css/themes.css */
+
+/* Define color variables for both themes */
+[data-bs-theme="light"] {
+    --bs-body-bg: #B5C7EB;
+    --bs-body-color: #212529;
+    --bs-tertiary-bg: ##E6D795;
+    --bs-border-color: ##394A6B;
+}
+
+[data-bs-theme="dark"] {
+    --bs-body-bg: #212529;
+    --bs-body-color: #dee2e6;
+    --bs-tertiary-bg: #343a40;
+    --bs-border-color: #495057;
+}
+
+/* Apply a smooth transition when the theme changes */
+body {
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+/* Ensure cards and other components use the theme colors */
+.card {
+    background-color: var(--bs-tertiary-bg);
+    border-color: var(--bs-border-color);
+}

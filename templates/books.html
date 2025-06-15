@@ -11,7 +11,7 @@
             <p class="text-muted">Manage your reading list and track progress</p>
         </div>
         <div>
-            <a href="{{ url_for('add_book') }}" class="btn btn-primary">
+            <a href="{{ url_for('search_book') }}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Add Book
             </a>
         </div>
@@ -168,8 +168,8 @@
                             {% endif %}
                         </p>
                         <div class="d-grid gap-2 d-md-block">
-                            <a href="{{ url_for('add_book') }}" class="btn btn-primary">
-                                <i class="bi bi-plus-circle"></i> Add Your First Book
+                            <a href="{{ url_for('search_book') }}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i> Add New Book
                             </a>
                             {% if status_filter != 'all' %}
                                 <a href="{{ url_for('books', status='all') }}" class="btn btn-outline-secondary">
