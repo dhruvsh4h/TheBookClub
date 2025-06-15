@@ -20,7 +20,7 @@ A social and gamified web app to make reading a shared adventure with friends an
 
 1.  **Clone the repo**
     ```sh
-    git clone [https://github.com/dhruvsh4h/TheBookClub.git](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git)
+    git clone [https://github.com/dhruvsh4h/TheBookClub.git]
     cd TheBookClub
     ```
 

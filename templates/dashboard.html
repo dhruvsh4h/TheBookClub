@@ -189,7 +189,7 @@
                         <div class="text-center py-4">
                             <i class="bi bi-book text-muted" style="font-size: 3rem;"></i>
                             <p class="text-muted mt-3">No books added yet</p>
-                            <a href="{{ url_for('add_book') }}" class="btn btn-primary">
+                            <a href="{{ url_for('search_book') }}" class="btn btn-primary">
                                 <i class="bi bi-plus-circle"></i> Add Your First Book
                             </a>
                         </div>
@@ -246,7 +246,7 @@
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <a href="{{ url_for('add_book') }}" class="btn btn-primary">
+                        <a href="{{ url_for('search_book') }}" class="btn btn-primary">
                             <i class="bi bi-plus-circle"></i> Add New Book
                         </a>
                         <a href="{{ url_for('books') }}" class="btn btn-outline-secondary">

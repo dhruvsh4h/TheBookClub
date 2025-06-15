@@ -79,3 +79,9 @@ class AddBookForm(FlaskForm):
         ('Read', 'Finished Reading')
     ], default='To Read')
     submit = SubmitField('Add Book')
+
+
+#  Replaced addbook form with a search form for Google Books API integration
+class BookSearchForm(FlaskForm):
+    query = StringField('Search for a book by title or author', validators=[DataRequired()])
+    submit = SubmitField('Search')

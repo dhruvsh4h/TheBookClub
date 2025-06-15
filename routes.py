@@ -2,7 +2,8 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
 from models import User, FamilyGroup, Book
-from forms import LoginForm, RegistrationForm, CreateGroupForm, JoinGroupForm, AddBookForm
+from forms import LoginForm, RegistrationForm, CreateGroupForm, JoinGroupForm, AddBookForm, BookSearchForm
+import requests
 
 @app.route('/')
 def index():
@@ -199,40 +200,42 @@ def books():
     )
     
     return render_template('books.html', books=books, status_filter=status_filter)
-
-@app.route('/add-book', methods=['GET', 'POST'])
-@login_required
-def add_book():
-    """Add a new book"""
-    form = AddBookForm()
-    if form.validate_on_submit():
-        try:
-            book = Book(
-                title=form.title.data,
-                author=form.author.data,
-                page_count=form.page_count.data,
-                status=form.status.data,
-                user_id=current_user.id
-            )
+# Removed this route to avoid confusion with the new search functionality
+# Uncomment if you want to keep the add book functionality
+# from forms import AddBookForm
+# @app.route('/add-book', methods=['GET', 'POST'])
+# @login_required
+# def add_book():
+#     """Add a new book"""
+#     form = AddBookForm()
+#     if form.validate_on_submit():
+#         try:
+#             book = Book(
+#                 title=form.title.data,
+#                 author=form.author.data,
+#                 page_count=form.page_count.data,
+#                 status=form.status.data,
+#                 user_id=current_user.id
+#             )
             
-            # Calculate points if book is marked as read
-            if book.status == 'Read':
-                book.mark_as_read()
+#             # Calculate points if book is marked as read
+#             if book.status == 'Read':
+#                 book.mark_as_read()
             
-            db.session.add(book)
-            db.session.commit()
+#             db.session.add(book)
+#             db.session.commit()
             
-            # Update user's total points
-            current_user.total_points = sum(b.points for b in current_user.books if b.status == 'Read')
-            db.session.commit()
+#             # Update user's total points
+#             current_user.total_points = sum(b.points for b in current_user.books if b.status == 'Read')
+#             db.session.commit()
             
-            flash(f'Book "{book.title}" added successfully!', 'success')
-            return redirect(url_for('books'))
-        except Exception:
-            db.session.rollback()
-            flash('Error adding book. Please try again.', 'error')
+#             flash(f'Book "{book.title}" added successfully!', 'success')
+#             return redirect(url_for('books'))
+#         except Exception:
+#             db.session.rollback()
+#             flash('Error adding book. Please try again.', 'error')
     
-    return render_template('add_book.html', form=form)
+#     return render_template('add_book.html', form=form)
 
 @app.route('/mark-read/<int:book_id>')
 @login_required
@@ -319,3 +322,61 @@ def not_found_error(error):
 def internal_error(error):
     db.session.rollback()
     return render_template('500.html'), 500
+@app.route('/search-book', methods=['GET', 'POST'])
+@login_required
+def search_book():
+    form = BookSearchForm()
+    search_results = []
+
+    if form.validate_on_submit():
+        query = form.query.data
+        api_key = app.config['GOOGLE_BOOKS_API_KEY']
+        url = f"https://www.googleapis.com/books/v1/volumes?q={query}&key={api_key}"
+
+        try:
+            response = requests.get(url)
+            response.raise_for_status()  # Will raise an error for bad responses
+            data = response.json()
+
+            # Process the results from the API
+            if 'items' in data:
+                for item in data['items']:
+                    volume_info = item.get('volumeInfo', {})
+                    book_data = {
+                        'google_id': item.get('id'),
+                        'title': volume_info.get('title', 'No Title'),
+                        'author': ', '.join(volume_info.get('authors', ['Unknown'])),
+                        'page_count': volume_info.get('pageCount', 0),
+                        'cover_url': volume_info.get('imageLinks', {}).get('thumbnail')
+                    }
+                    search_results.append(book_data)
+        except requests.exceptions.RequestException as e:
+            flash(f"Error calling Google Books API: {e}", 'danger')
+
+    return render_template('search_book.html', form=form, results=search_results)
+
+@app.route('/add-book-from-api', methods=['POST'])
+@login_required
+def add_book_from_api():
+    try:
+        # Get book details from the submitted form
+        title = request.form.get('title')
+        author = request.form.get('author')
+        page_count = int(request.form.get('page_count', 0))
+
+        # Create the book and add it to the database
+        book = Book(
+            title=title,
+            author=author,
+            page_count=page_count,
+            status='To Read', # Default status
+            user_id=current_user.id
+        )
+        db.session.add(book)
+        db.session.commit()
+        flash(f'"{title}" has been added to your reading list!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error adding book: {e}', 'danger')
+
+    return redirect(url_for('search_book'))

@@ -11,3 +11,4 @@ instance/
 
 # OS-specific files
 .DS_StoreD
+.env # Environment variables file

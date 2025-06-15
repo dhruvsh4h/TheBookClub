@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Search for Books{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Search for a New Book</h2>
+    <p class="text-muted">Find any book using the Google Books database.</p>
+
+    <form method="POST" class="mb-4">
+        {{ form.hidden_tag() }}
+        <div class="input-group">
+            {{ form.query(class="form-control", placeholder="e.g., The Hobbit by J.R.R. Tolkien") }}
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+
+    {% if results %}
+        <h3>Search Results</h3>
+        <div class="list-group">
+            {% for book in results %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex">
+                    {% if book.cover_url %}
+                        <img src="{{ book.cover_url }}" alt="Cover for {{ book.title }}" class="me-3" style="width: 50px; height: auto;">
+                    {% endif %}
+                    <div>
+                        <h5 class="mb-1">{{ book.title }}</h5>
+                        <p class="mb-1">by {{ book.author }}</p>
+                        <small class="text-muted">{{ book.page_count }} pages</small>
+                    </div>
+                </div>
+
+                <!-- Form to add this specific book -->
+                <form action="{{ url_for('add_book_from_api') }}" method="POST">
+                    <input type="hidden" name="title" value="{{ book.title }}">
+                    <input type="hidden" name="author" value="{{ book.author }}">
+                    <input type="hidden" name="page_count" value="{{ book.page_count }}">
+                    <button type="submit" class="btn btn-sm btn-success">Add to List</button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
