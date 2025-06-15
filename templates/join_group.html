@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Join Family Group - BookQuest{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3><i class="bi bi-box-arrow-in-right"></i> Join Family Group</h3>
+                    <p class="text-muted mb-0">Enter your invite code</p>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-4">
+                            {{ form.invite_code.label(class="form-label") }}
+                            {{ form.invite_code(class="form-control text-center", style="font-size: 1.2rem; letter-spacing: 0.1em;", placeholder="XXXXXXXX") }}
+                            {% if form.invite_code.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.invite_code.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Ask your family member for the 8-character invite code</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                            <a href="{{ url_for('family_groups') }}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <small class="text-muted">
+                        Don't have an invite code? 
+                        <a href="{{ url_for('create_group') }}">Create your own group</a>
+                    </small>
+                </div>
+            </div>
+            
+            <!-- Help Card -->
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6><i class="bi bi-question-circle"></i> How to get an invite code?</h6>
+                    <ul class="small text-muted mb-0">
+                        <li>Ask a family member who already created a group</li>
+                        <li>The group creator can find the invite code in their group details</li>
+                        <li>Codes are 8 characters long (letters and numbers)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

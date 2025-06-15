@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Section -->
+    <div class="row justify-content-center text-center mb-5">
+        <div class="col-lg-8">
+            <h1 class="display-4 mb-4">
+                <i class="bi bi-book-half text-primary"></i>
+                Welcome to BookQuest
+            </h1>
+            <p class="lead mb-4">
+                Turn reading into an exciting family adventure! Track books, earn points, 
+                and compete with your loved ones in the ultimate reading challenge.
+            </p>
+            {% if not current_user.is_authenticated %}
+                <div class="d-grid gap-2 d-md-block">
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-person-plus"></i> Get Started
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </a>
+                </div>
+            {% else %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-speedometer2"></i> Go to Dashboard
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-people-fill text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="card-title">Family Groups</h5>
+                    <p class="card-text">
+                        Create or join family reading groups with up to 15 members. 
+                        Include parents, children, cousins, and extended family.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-trophy-fill text-warning" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="card-title">Points & Rewards</h5>
+                    <p class="card-text">
+                        Earn points for every book you finish! Points are based on book length, 
+                        encouraging readers to tackle both short stories and epic novels.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-graph-up text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="card-title">Progress Tracking</h5>
+                    <p class="card-text">
+                        Track your reading journey with detailed statistics. 
+                        See your progress and compete on family leaderboards.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    {% if not current_user.is_authenticated %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-8">
+            <h2 class="text-center mb-4">How It Works</h2>
+            <div class="row g-3">
+                <div class="col-md-3 text-center">
+                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                         style="width: 60px; height: 60px;">
+                        <span class="fw-bold text-white">1</span>
+                    </div>
+                    <h6>Sign Up</h6>
+                    <small class="text-muted">Create your account</small>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                         style="width: 60px; height: 60px;">
+                        <span class="fw-bold text-white">2</span>
+                    </div>
+                    <h6>Join/Create</h6>
+                    <small class="text-muted">Join or create a family group</small>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                         style="width: 60px; height: 60px;">
+                        <span class="fw-bold text-white">3</span>
+                    </div>
+                    <h6>Add Books</h6>
+                    <small class="text-muted">Track your reading list</small>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                         style="width: 60px; height: 60px;">
+                        <span class="fw-bold text-white">4</span>
+                    </div>
+                    <h6>Earn Points</h6>
+                    <small class="text-muted">Compete and have fun!</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}{{ group.name }} - BookQuest{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Group Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h2>
+                        <i class="bi bi-people"></i> {{ group.name }}
+                        {% if group.creator_id == current_user.id %}
+                            <span class="badge bg-success ms-2">Creator</span>
+                        {% endif %}
+                    </h2>
+                    {% if group.description %}
+                        <p class="text-muted">{{ group.description }}</p>
+                    {% endif %}
+                    <div class="d-flex gap-3 text-muted small">
+                        <span><i class="bi bi-people"></i> {{ group.members.count() }}/{{ group.max_members }} members</span>
+                        <span><i class="bi bi-calendar"></i> Created {{ group.created_at.strftime('%B %Y') }}</span>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <div class="mb-2">
+                        <small class="text-muted">Invite Code:</small>
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" class="form-control" value="{{ group.invite_code }}" readonly>
+                            <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('{{ group.invite_code }}')">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Leaderboard -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-trophy"></i> Family Leaderboard</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if leaderboard %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Reader</th>
+                                        <th>Books Read</th>
+                                        <th>Total Points</th>
+                                        <th>Streak</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for entry in leaderboard %}
+                                        <tr class="{{ 'table-primary' if entry.user == current_user else '' }}">
+                                            <td>
+                                                {% if loop.index == 1 %}
+                                                    <i class="bi bi-trophy-fill text-warning"></i>
+                                                {% elif loop.index == 2 %}
+                                                    <i class="bi bi-award-fill text-secondary"></i>
+                                                {% elif loop.index == 3 %}
+                                                    <i class="bi bi-award text-warning"></i>
+                                                {% else %}
+                                                    {{ loop.index }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <strong>{{ entry.user.username }}</strong>
+                                                {% if entry.user == current_user %}
+                                                    <span class="badge bg-primary ms-1">You</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ entry.books_read }}</td>
+                                            <td>
+                                                <span class="fw-bold text-success">{{ entry.points }}</span> pts
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold text-info">{{ entry.streak }}</span>
+                                                {% if entry.streak > 0 %}🔥{% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-trophy text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-3">No reading activity yet</p>
+                            <p class="small text-muted">Start reading and marking books as complete to appear on the leaderboard!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Group Info & Recent Activity -->
+        <div class="col-lg-4">
+            <!-- Group Members -->
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-people"></i> Members</h6>
+                </div>
+                <div class="card-body">
+                    {% for member in group.members %}
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <strong>{{ member.username }}</strong>
+                                {% if member == current_user %}
+                                    <span class="badge bg-primary ms-1">You</span>
+                                {% endif %}
+                                {% if member.id == group.creator_id %}
+                                    <span class="badge bg-success ms-1">Creator</span>
+                                {% endif %}
+                            </div>
+                            <small class="text-muted">{{ member.total_points }} pts</small>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-clock-history"></i> Recent Activity</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_activity %}
+                        {% for book in recent_activity %}
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">{{ book.reader.username }}</div>
+                                    <div class="small">finished reading</div>
+                                    <div class="small text-primary">{{ book.title }}</div>
+                                    <div class="small text-muted">{{ book.date_completed.strftime('%b %d') }}</div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success">+{{ book.points }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="bi bi-clock-history text-muted" style="font-size: 2rem;"></i>
+                            <p class="text-muted mt-2 mb-0">No recent activity</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        alert('Invite code copied to clipboard!');
+    });
+}
+</script>
+{% endblock %}

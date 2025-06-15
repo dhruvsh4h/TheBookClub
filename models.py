@@ -228,24 +228,3 @@ class Book(db.Model):
     
     def __repr__(self):
         return f'<Book {self.title} by {self.author}>'
-    
-
-# This is a helper table that links users to the groups they are members of.
-
-group_members = db.Table('group_members',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('group_id', db.Integer, db.ForeignKey('group.id'), primary_key=True)
-)
-
-class Group(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    # Generate a unique, hard-to-guess code for invites
-    invite_code = db.Column(db.String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()))
-    
-    # This 'members' relationship links a Group to all the User objects in it.
-    members = db.relationship('User', secondary=group_members, lazy='subquery',
-        backref=db.backref('groups', lazy=True))
-
-    def __repr__(self):
-        return f'<Group {self.name}>'

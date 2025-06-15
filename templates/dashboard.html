@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - BookQuest{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Welcome back, {{ current_user.username }}!</h2>
+            <p class="text-muted">Here's your reading progress overview</p>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-xl-2">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="card-title mb-1">Total Points</h6>
+                            <h3 class="mb-0">{{ stats.total_points }}</h3>
+                        </div>
+                        <div>
+                            <i class="bi bi-trophy-fill" style="font-size: 1.8rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-sm-6 col-xl-2">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="card-title mb-1">Books Read</h6>
+                            <h3 class="mb-0">{{ stats.books_read }}</h3>
+                        </div>
+                        <div>
+                            <i class="bi bi-check-circle-fill" style="font-size: 1.8rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-sm-6 col-xl-2">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="card-title mb-1">Currently Reading</h6>
+                            <h3 class="mb-0">{{ stats.books_reading }}</h3>
+                        </div>
+                        <div>
+                            <i class="bi bi-book-half" style="font-size: 1.8rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-sm-6 col-xl-2">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="card-title mb-1">Reading Streak</h6>
+                            <h3 class="mb-0">{{ stats.current_streak }}</h3>
+                            <small>🔥 days</small>
+                        </div>
+                        <div>
+                            <i class="bi bi-calendar-check" style="font-size: 1.8rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-sm-6 col-xl-2">
+            <div class="card bg-secondary text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="card-title mb-1">Pages Read</h6>
+                            <h3 class="mb-0">{{ "{:,}".format(stats.total_pages) }}</h3>
+                        </div>
+                        <div>
+                            <i class="bi bi-file-text" style="font-size: 1.8rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-sm-6 col-xl-2">
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="card-title mb-1">This Year</h6>
+                            <h3 class="mb-0">{{ stats.books_this_year }}</h3>
+                            <small>books</small>
+                        </div>
+                        <div>
+                            <i class="bi bi-calendar3" style="font-size: 1.8rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly Progress & Streak Info -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title"><i class="bi bi-calendar-month"></i> Monthly Reading Goal</h6>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>{{ stats.monthly_progress.books_read }} / {{ stats.monthly_progress.goal }} books</span>
+                        <span class="fw-bold">{{ stats.monthly_progress.percentage }}%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" style="width: {{ stats.monthly_progress.percentage }}%"></div>
+                    </div>
+                    {% if stats.monthly_progress.percentage >= 100 %}
+                        <small class="text-success mt-1"><i class="bi bi-check-circle"></i> Goal achieved!</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title"><i class="bi bi-award"></i> Reading Achievements</h6>
+                    <div class="d-flex justify-content-between">
+                        <div class="text-center">
+                            <div class="text-info fw-bold">{{ stats.current_streak }}</div>
+                            <small class="text-muted">Current Streak</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-warning fw-bold">{{ stats.longest_streak }}</div>
+                            <small class="text-muted">Best Streak</small>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-success fw-bold">{{ stats.total_points }}</div>
+                            <small class="text-muted">Total Points</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Books -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Books</h5>
+                    <a href="{{ url_for('books') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_books %}
+                        <div class="list-group list-group-flush">
+                            {% for book in recent_books %}
+                                <div class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{ book.title }}</h6>
+                                        <p class="mb-1 text-muted">by {{ book.author }}</p>
+                                        <small class="text-muted">{{ book.page_count }} pages</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-{{ 'success' if book.status == 'Read' else 'warning' if book.status == 'Reading' else 'secondary' }}">
+                                            {{ book.status }}
+                                        </span>
+                                        {% if book.status == 'Read' %}
+                                            <div class="small text-muted mt-1">{{ book.points }} pts</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-book text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-3">No books added yet</p>
+                            <a href="{{ url_for('add_book') }}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i> Add Your First Book
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Family Groups -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-people"></i> Family Groups</h5>
+                    <a href="{{ url_for('family_groups') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if family_groups %}
+                        {% for group in family_groups %}
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h6 class="mb-0">
+                                        <a href="{{ url_for('group_detail', group_id=group.id) }}" class="text-decoration-none">
+                                            {{ group.name }}
+                                        </a>
+                                    </h6>
+                                    <small class="text-muted">{{ group.members.count() }} members</small>
+                                </div>
+                                <div>
+                                    <i class="bi bi-chevron-right"></i>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-3">
+                            <i class="bi bi-people text-muted" style="font-size: 2rem;"></i>
+                            <p class="text-muted mt-2 mb-3">No family groups yet</p>
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('create_group') }}" class="btn btn-primary btn-sm">
+                                    <i class="bi bi-plus-square"></i> Create Group
+                                </a>
+                                <a href="{{ url_for('join_group') }}" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-box-arrow-in-right"></i> Join Group
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('add_book') }}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Add New Book
+                        </a>
+                        <a href="{{ url_for('books') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-book"></i> Manage Books
+                        </a>
+                        <a href="{{ url_for('create_group') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-plus-square"></i> Create Family Group
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

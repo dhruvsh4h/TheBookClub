@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}My Books - BookQuest{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="bi bi-book"></i> My Books</h2>
+            <p class="text-muted">Manage your reading list and track progress</p>
+        </div>
+        <div>
+            <a href="{{ url_for('add_book') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add Book
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="status-filter" id="all" 
+                               {% if status_filter == 'all' %}checked{% endif %}>
+                        <label class="btn btn-outline-primary" for="all">
+                            <a href="{{ url_for('books', status='all') }}" class="text-decoration-none">All Books</a>
+                        </label>
+
+                        <input type="radio" class="btn-check" name="status-filter" id="to-read" 
+                               {% if status_filter == 'To Read' %}checked{% endif %}>
+                        <label class="btn btn-outline-primary" for="to-read">
+                            <a href="{{ url_for('books', status='To Read') }}" class="text-decoration-none">To Read</a>
+                        </label>
+
+                        <input type="radio" class="btn-check" name="status-filter" id="reading" 
+                               {% if status_filter == 'Reading' %}checked{% endif %}>
+                        <label class="btn btn-outline-primary" for="reading">
+                            <a href="{{ url_for('books', status='Reading') }}" class="text-decoration-none">Reading</a>
+                        </label>
+
+                        <input type="radio" class="btn-check" name="status-filter" id="read" 
+                               {% if status_filter == 'Read' %}checked{% endif %}>
+                        <label class="btn btn-outline-primary" for="read">
+                            <a href="{{ url_for('books', status='Read') }}" class="text-decoration-none">Finished</a>
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-muted">
+                        Showing {{ books.items|length }} of {{ books.total }} books
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Books List -->
+    {% if books.items %}
+        <div class="row g-3">
+            {% for book in books.items %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">{{ book.title }}</h5>
+                                <span class="badge bg-{{ 'success' if book.status == 'Read' else 'warning' if book.status == 'Reading' else 'secondary' }}">
+                                    {{ book.status }}
+                                </span>
+                            </div>
+                            <h6 class="card-subtitle mb-2 text-muted">by {{ book.author }}</h6>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="bi bi-file-text"></i> {{ book.page_count }} pages
+                                    <span class="ms-2"><i class="bi bi-clock"></i> {{ book.get_reading_time_estimate() }}</span>
+                                    {% if book.status == 'Read' %}
+                                        <span class="ms-2"><i class="bi bi-trophy"></i> {{ book.points }} points</span>
+                                    {% endif %}
+                                </small>
+                            </p>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    Added {{ book.date_added.strftime('%b %d, %Y') }}
+                                    {% if book.date_completed %}
+                                        <br>Completed {{ book.date_completed.strftime('%b %d, %Y') }}
+                                    {% endif %}
+                                </small>
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex gap-2">
+                                {% if book.status != 'Read' %}
+                                    <a href="{{ url_for('mark_book_read', book_id=book.id) }}" 
+                                       class="btn btn-success btn-sm flex-grow-1">
+                                        <i class="bi bi-check-circle"></i> Mark as Read
+                                    </a>
+                                {% endif %}
+                                <a href="{{ url_for('delete_book', book_id=book.id) }}" 
+                                   class="btn btn-outline-danger btn-sm"
+                                   onclick="return confirm('Are you sure you want to delete this book?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if books.pages > 1 %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if books.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('books', page=books.prev_num, status=status_filter) }}">Previous</a>
+                        </li>
+                    {% endif %}
+
+                    {% for page in books.iter_pages() %}
+                        {% if page %}
+                            {% if page != books.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('books', page=page, status=status_filter) }}">{{ page }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page }}</span>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if books.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('books', page=books.next_num, status=status_filter) }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+
+    {% else %}
+        <!-- Empty State -->
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <div class="card">
+                    <div class="card-body py-5">
+                        <i class="bi bi-book text-muted" style="font-size: 4rem;"></i>
+                        <h4 class="mt-3">
+                            {% if status_filter == 'all' %}
+                                No books in your library yet
+                            {% else %}
+                                No {{ status_filter|lower }} books
+                            {% endif %}
+                        </h4>
+                        <p class="text-muted">
+                            {% if status_filter == 'all' %}
+                                Start building your reading list by adding your first book.
+                            {% else %}
+                                You don't have any books with "{{ status_filter }}" status.
+                            {% endif %}
+                        </p>
+                        <div class="d-grid gap-2 d-md-block">
+                            <a href="{{ url_for('add_book') }}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i> Add Your First Book
+                            </a>
+                            {% if status_filter != 'all' %}
+                                <a href="{{ url_for('books', status='all') }}" class="btn btn-outline-secondary">
+                                    View All Books
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -106,28 +106,29 @@ def create_group():
     """Create a new family group"""
     form = CreateGroupForm()
     if form.validate_on_submit():
-        try:
-            group = FamilyGroup(
-                name=form.name.data,
-                description=form.description.data,
-                max_members=form.max_members.data,
-                creator_id=current_user.id
-            )
-            group.generate_invite_code()
-            db.session.add(group)
-            db.session.flush()  # Get the ID
-            
-            # Add creator as member
-            group.members.append(current_user)
-            db.session.commit()
-            
-            flash(f'Family group "{group.name}" created successfully! Invite code: {group.invite_code}', 'success')
-            return redirect(url_for('group_detail', group_id=group.id))
-        except Exception:
-            db.session.rollback()
-            flash('Error creating group. Please try again.', 'error')
-    
-    return render_template('create_group.html', form=form)
+        # Use the correct FamilyGroup model
+        new_group = FamilyGroup(
+            name=form.name.data,
+            description=form.description.data,
+            max_members=form.max_members.data,
+            creator_id=current_user.id  # Set the creator
+        )
+
+        # Generate the invite code
+        new_group.generate_invite_code()
+
+        # Add the current user as the first member
+        new_group.members.append(current_user)
+
+        db.session.add(new_group)
+        db.session.commit()
+
+        flash(f'Group "{new_group.name}" created successfully!', 'success')
+
+        # Redirect to the correct 'group_detail' endpoint
+        return redirect(url_for('group_detail', group_id=new_group.id)) 
+
+    return render_template('create_group.html', title='Create Group', form=form)
 
 @app.route('/join-group', methods=['GET', 'POST'])
 @login_required
@@ -136,7 +137,9 @@ def join_group():
     form = JoinGroupForm()
     if form.validate_on_submit():
         try:
+            # --- THIS IS THE CORRECTED LINE ---
             group = FamilyGroup.query.filter_by(invite_code=form.invite_code.data).first()
+
             if not group:
                 flash('Invalid invite code.', 'error')
             elif current_user in group.members:
@@ -151,7 +154,7 @@ def join_group():
         except Exception:
             db.session.rollback()
             flash('Error joining group. Please try again.', 'error')
-    
+
     return render_template('join_group.html', form=form)
 
 @app.route('/group/<int:group_id>')

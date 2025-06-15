@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Add Book - BookQuest{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3><i class="bi bi-plus-circle"></i> Add New Book</h3>
+                    <p class="text-muted mb-0">Track your reading progress</p>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="mb-3">
+                            {{ form.title.label(class="form-label") }}
+                            {{ form.title(class="form-control", placeholder="Enter the book title") }}
+                            {% if form.title.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.title.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.author.label(class="form-label") }}
+                            {{ form.author(class="form-control", placeholder="Enter the author's name") }}
+                            {% if form.author.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.author.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.page_count.label(class="form-label") }}
+                            {{ form.page_count(class="form-control", placeholder="e.g., 250") }}
+                            {% if form.page_count.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.page_count.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">This helps calculate points (1 point per 10 pages, minimum 5 points)</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            {{ form.status.label(class="form-label") }}
+                            {{ form.status(class="form-select") }}
+                            {% if form.status.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.status.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Select "Finished Reading" if you've already completed this book</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary btn-lg") }}
+                            <a href="{{ url_for('books') }}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <div class="row text-center small text-muted">
+                        <div class="col-4">
+                            <i class="bi bi-trophy d-block mb-1"></i>
+                            Earn points
+                        </div>
+                        <div class="col-4">
+                            <i class="bi bi-graph-up d-block mb-1"></i>
+                            Track progress
+                        </div>
+                        <div class="col-4">
+                            <i class="bi bi-people d-block mb-1"></i>
+                            Family compete
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
