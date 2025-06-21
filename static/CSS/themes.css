@@ -2,26 +2,102 @@
 
 /* Define color variables for both themes */
 [data-bs-theme="light"] {
-    --bs-body-bg: #B5C7EB;
-    --bs-body-color: #212529;
-    --bs-tertiary-bg: ##E6D795;
-    --bs-border-color: ##394A6B;
+    --bs-body-bg: #ffffff;
+    --bs-body-color: #343a40;
+    --bs-tertiary-bg: #f8f9fa;
+    --bs-border-color: #dee2e6;
+    --bs-heading-color: #212529; /* Darker for headings */
+    --bs-link-color: #007bff;
+    --bs-link-hover-color: #0056b3;
+    --bs-text-muted-color: #6c757d;
+    --bs-navbar-bg: var(--bs-body-bg);
+    --bs-navbar-text-color: var(--bs-heading-color);
+    --bs-navbar-link-color: var(--bs-link-color);
+    --bs-navbar-link-hover-color: var(--bs-link-hover-color);
 }
 
 [data-bs-theme="dark"] {
-    --bs-body-bg: #212529;
-    --bs-body-color: #dee2e6;
-    --bs-tertiary-bg: #343a40;
+    --bs-body-bg: #212529; /* Dark background */
+    --bs-body-color: #dee2e6; /* Light body text */
+    --bs-tertiary-bg: #343a40; /* Darker tertiary background */
     --bs-border-color: #495057;
+    --bs-heading-color: #f8f9fa; /* Light headings for dark mode */
+    --bs-link-color: #6daffb;
+    --bs-link-hover-color: #3e90f0;
+    --bs-text-muted-color: #adb5bd;
+    --bs-navbar-bg: var(--bs-body-bg);
+    --bs-navbar-text-color: var(--bs-heading-color);
+    --bs-navbar-link-color: var(--bs-link-color);
+    --bs-navbar-link-hover-color: var(--bs-link-hover-color);
 }
 
 /* Apply a smooth transition when the theme changes */
 body {
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    color: var(--bs-body-color);
 }
 
 /* Ensure cards and other components use the theme colors */
 .card {
     background-color: var(--bs-tertiary-bg);
     border-color: var(--bs-border-color);
+}
+
+/* Explicitly target headings to use the heading color variable */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--bs-heading-color) !important; /* ADDED !important */
+}
+
+/* Ensure links use theme colors (general links) */
+a {
+    color: var(--bs-link-color);
+}
+
+a:hover {
+    color: var(--bs-link-hover-color);
+}
+
+/* Override Bootstrap's .text-muted for theme consistency */
+.text-muted {
+    color: var(--bs-text-muted-color) !important;
+}
+
+/* --- NAV BAR STYLES --- */
+.navbar {
+    background-color: var(--bs-navbar-bg) !important;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.navbar .navbar-brand,
+.navbar .nav-link,
+.navbar-toggler {
+    color: var(--bs-navbar-text-color) !important; /* ADDED !important */
+}
+
+/* Specific link styling within the navbar */
+.navbar .nav-link {
+    color: var(--bs-navbar-link-color) !important; /* ADDED !important */
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+    color: var(--bs-navbar-link-hover-color) !important; /* ADDED !important */
+}
+
+/* Toggler icon color (SVG background-image) */
+[data-bs-theme="light"] .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgb(33, 37, 41)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+[data-bs-theme="dark"] .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgb(248, 249, 250)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Specificity for main page header and card headers */
+.container > .row > .col > h2 {
+    color: var(--bs-heading-color) !important; /* ADDED !important */
+}
+.card:not([class*="bg-"]) h5,
+.card:not([class*="bg-"]) h6 {
+    color: var(--bs-heading-color) !important; /* ADDED !important */
 }

@@ -124,7 +124,7 @@
                         <span class="fw-bold">{{ stats.monthly_progress.percentage }}%</span>
                     </div>
                     <div class="progress" style="height: 10px;">
-                        <div class="progress-bar bg-success" style="width: {{ stats.monthly_progress.percentage }}%"></div>
+                        <div class="progress-bar bg-success" style="width: {{ stats.monthly_progress.percentage|default(0, true)|int }}%"></div>
                     </div>
                     {% if stats.monthly_progress.percentage >= 100 %}
                         <small class="text-success mt-1"><i class="bi bi-check-circle"></i> Goal achieved!</small>
@@ -198,11 +198,11 @@
             </div>
         </div>
 
-        <!-- Family Groups -->
+        <!-- Groups -->
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="bi bi-people"></i> Family Groups</h5>
+                    <h5 class="mb-0"><i class="bi bi-people"></i>Groups</h5>
                     <a href="{{ url_for('family_groups') }}" class="btn btn-sm btn-outline-primary">View All</a>
                 </div>
                 <div class="card-body">
@@ -225,7 +225,7 @@
                     {% else %}
                         <div class="text-center py-3">
                             <i class="bi bi-people text-muted" style="font-size: 2rem;"></i>
-                            <p class="text-muted mt-2 mb-3">No family groups yet</p>
+                            <p class="text-muted mt-2 mb-3">No groups yet</p>
                             <div class="d-grid gap-2">
                                 <a href="{{ url_for('create_group') }}" class="btn btn-primary btn-sm">
                                     <i class="bi bi-plus-square"></i> Create Group
@@ -250,7 +250,7 @@
                             <i class="bi bi-plus-circle"></i> Add New Book
                         </a>
                         <a href="{{ url_for('create_group') }}" class="btn btn-outline-secondary">
-                            <i class="bi bi-plus-square"></i> Create Family Group
+                            <i class="bi bi-plus-square"></i> Create Group
                         </a>
                     </div>
                 </div>
