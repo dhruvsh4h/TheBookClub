@@ -7,11 +7,14 @@
     <h2>Search for a New Book</h2>
     <p class="text-muted">Find any book using the Google Books database.</p>
 
-    <form method="POST" class="mb-4">
+    <form method="POST" class="mb-4" onsubmit="showLoadingSpinner(event, 'searchButton')">
         {{ form.hidden_tag() }}
         <div class="input-group">
-            {{ form.query(class="form-control", placeholder="e.g., The Hobbit by J.R.R. Tolkien") }}
-            {{ form.submit(class="btn btn-primary") }}
+            {{ form.query(class="form-control", placeholder="e.g., Harry Potter") }}
+            <button type="submit" id="searchButton" class="btn btn-primary">
+                <span class="btn-text">Search</span>
+                <span class="loading-spinner"></span>
+            </button>
         </div>
     </form>
 
@@ -31,16 +34,93 @@
                     </div>
                 </div>
 
-                <!-- Form to add this specific book -->
-                <form action="{{ url_for('add_book_from_api') }}" method="POST">
+                <!-- Add Book Form with Note, Star Rating, and Review -->
+                <form action="{{ url_for('add_book_from_api') }}" method="POST" class="add-book-form d-flex align-items-center flex-wrap" onsubmit="return handleAddBookSubmit(event)">
                     <input type="hidden" name="title" value="{{ book.title }}">
                     <input type="hidden" name="author" value="{{ book.author }}">
                     <input type="hidden" name="page_count" value="{{ book.page_count }}">
-                    <button type="submit" class="btn btn-sm btn-success">Add to List</button>
+                    <input type="hidden" name="note" class="note-input" maxlength="100">
+                    <input type="hidden" name="rating" class="rating-input">
+                    <input type="hidden" name="review" class="review-input">
+                    <button type="button" class="btn btn-sm btn-success add-btn" onclick="showNoteInput(this)">
+                        <span class="btn-text">Add to List</span>
+                        <span class="loading-spinner"></span>
+                    </button>
+                    <div class="ms-2 d-none note-block" style="flex-direction:column;gap:4px;">
+                        <input type="text" class="form-control form-control-sm note-field mb-1" maxlength="100" placeholder="What did you like? (max 100 chars)">
+                        <!-- Star rating -->
+                        <div class="star-rating mb-1">
+                            {% for i in range(5,0,-1) %}
+                            <input type="radio" id="star{{i}}-{{loop.index}}" name="star-{{loop.index}}" value="{{i}}" class="star-radio" style="display:none;">
+                            <label for="star{{i}}-{{loop.index}}" class="star" style="font-size:1.2em;cursor:pointer;">&#9733;</label>
+                            {% endfor %}
+                        </div>
+                        <textarea class="form-control form-control-sm review-field mb-1" maxlength="500" rows="2" placeholder="Write your review (optional, max 500 chars)"></textarea>
+                        <button type="submit" class="btn btn-sm btn-primary submit-note-btn">Save</button>
+                    </div>
                 </form>
             </div>
             {% endfor %}
         </div>
     {% endif %}
+    <script>
+        function showLoadingSpinner(event, buttonId) {
+            const button = document.getElementById(buttonId);
+            button.classList.add('loading');
+            button.disabled = true;
+        }
+
+        function showNoteInput(addBtn) {
+            // Hide the add button, show the note input and submit button
+            addBtn.classList.add('d-none');
+            const form = addBtn.closest('.add-book-form');
+            const noteBlock = form.querySelector('.note-block');
+            noteBlock.classList.remove('d-none');
+            form.querySelector('.note-field').focus();
+        }
+
+        function handleAddBookSubmit(event) {
+            // Find the note input and set its value to the hidden input
+            const form = event.target;
+            const noteField = form.querySelector('.note-field');
+            const noteInput = form.querySelector('.note-input');
+            const reviewField = form.querySelector('.review-field');
+            const reviewInput = form.querySelector('.review-input');
+            const ratingInput = form.querySelector('.rating-input');
+            // Get selected star rating
+            const stars = form.querySelectorAll('.star-radio');
+            let rating = '';
+            stars.forEach(star => { if(star.checked) rating = star.value; });
+            ratingInput.value = rating;
+            noteInput.value = noteField.value.slice(0, 100);
+            reviewInput.value = reviewField.value.slice(0, 500);
+            // Show spinner on submit button
+            const submitBtn = form.querySelector('.submit-note-btn');
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            return true;
+        }
+
+        // Star rating click handler
+        document.addEventListener('click', function(e) {
+            if(e.target.classList.contains('star')) {
+                const label = e.target;
+                const radio = document.getElementById(label.getAttribute('for'));
+                radio.checked = true;
+                // Highlight stars
+                const stars = Array.from(label.parentNode.querySelectorAll('.star'));
+                const idx = stars.indexOf(label);
+                stars.forEach((star, i) => {
+                    star.style.color = i <= idx ? '#ffc107' : '#ccc';
+                });
+            }
+        });
+    </script>
+    <style>
+        .star-rating .star { color: #ccc; }
+        .star-rating .star:hover,
+        .star-rating .star:hover ~ .star { color: #ffc107 !important; }
+        .star-rating input:checked ~ label.star { color: #ffc107 !important; }
+    </style>
 </div>
 {% endblock %}

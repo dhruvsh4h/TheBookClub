@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 500px;">
+    <h2>Send Us Your Feedback</h2>
+    <form method="POST" action="{{ url_for('feedback_page') }}">
+        <div class="mb-3">
+            <label for="username" class="form-label">Your Name (optional)</label>
+            <input type="text" class="form-control" id="username" name="username" maxlength="50" placeholder="Enter your name or nickname">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Rate Your Experience</label>
+            <div class="star-rating mb-1"></div>
+                {% for i in range(5,0,-1) %}
+                <input type="radio" id="star{{i}}" name="rating" value="{{i}}" style="display:none;">
+                <label for="star{{i}}" class="star" style="font-size:1.5em;cursor:pointer;">&#9733;</label>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="feedback" class="form-label">Your Feedback</label>
+            <textarea class="form-control" id="feedback" name="feedback" rows="3" maxlength="500" placeholder="Share your thoughts or suggestions (max 500 chars)"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Feedback</button>
+    </form>
+</div>
+<script>
+    // Star rating highlight
+    document.addEventListener('click', function(e) {
+        if(e.target.classList.contains('star')) {
+            const label = e.target;
+            const radio = document.getElementById(label.getAttribute('for'));
+            radio.checked = true;
+            const stars = Array.from(label.parentNode.querySelectorAll('.star'));
+            const idx = stars.indexOf(label);
+            stars.forEach((star, i) => {
+                star.style.color = i <= idx ? '#ffc107' : '#ccc';
+            });
+        }
+    });
+</script>
+<style>
+    .star-rating .star { color: #ccc; }
+    .star-rating .star:hover,
+    .star-rating .star:hover ~ .star { color: #ffc107 !important; }
+    .star-rating input:checked ~ label.star { color: #ffc107 !important; }
+</style>
+{% endblock %}

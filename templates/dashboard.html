@@ -4,6 +4,20 @@
 
 {% block content %}
 <div class="container">
+    <div id="versionBanner" class="alert alert-info alert-dismissible fade show" role="alert" style="display: none;">
+        <strong>Welcome to BookQuest v1.0!</strong> This is our first public release. We're excited to help you track your reading.
+        Your feedback is invaluable as we grow! <a href="#" id="feedbackLink" class="alert-link">Click here to share your thoughts.</a>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="dismissBanner()"></button>
+    </div>
+
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Welcome back, {{ current_user.username }}!</h2>
+            <p class="text-muted">Here's your reading progress overview</p>
+        </div>
+    </div>
+    <!-- Version Banner -->
     <!-- Welcome Header -->
     <div class="row mb-4">
         <div class="col">
@@ -257,5 +271,25 @@
             </div>
         </div>
     </div>
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const versionBanner = document.getElementById('versionBanner');
+            const feedbackLink = document.getElementById('feedbackLink');
+
+            // Check if the banner has been dismissed before
+            if (!localStorage.getItem('bookquest_v1_banner_dismissed')) {
+                versionBanner.style.display = 'block'; // Show the banner
+            }
+
+            // Set the feedback link (you'll create this page/form)
+            feedbackLink.href = "{{ url_for('feedback_page') }}"; // Assuming you'll have a Flask route named 'feedback_page'
+
+            // Function to dismiss the banner and store in local storage
+            window.dismissBanner = function() {
+                versionBanner.style.display = 'none';
+                localStorage.setItem('bookquest_v1_banner_dismissed', 'true');
+            };
+        });
+    </script>
 </div>
 {% endblock %}

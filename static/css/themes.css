@@ -101,3 +101,30 @@ a:hover {
 .card:not([class*="bg-"]) h6 {
     color: var(--bs-heading-color) !important; /* ADDED !important */
 }
+
+/* Spinner styles */
+.loading-spinner {
+    display: none; /* Hidden by default */
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid var(--bs-primary); /* Use your primary theme color */
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    vertical-align: middle;
+    margin-left: 8px; /* Space from button text */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* For buttons that show a spinner */
+.btn.loading .btn-text {
+    visibility: hidden; /* Hide text when spinner is visible */
+}
+
+.btn.loading .loading-spinner {
+    display: inline-block; /* Show spinner */
+}

@@ -9,6 +9,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/themes.css') }}">
 </head>
 <body>
+    <!-- Version Banner -->
+    <div class="alert alert-info text-center mb-0" style="border-radius:0;">
+        <strong>BookClub App Version 1</strong> &mdash; Welcome! Features are evolving.
+        <span class="ms-2">
+            <a href="{{ url_for('feedback_page') }}" class="alert-link">Send Feedback</a>
+        </span>
+    </div>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg mb-4">
         <div class="container">

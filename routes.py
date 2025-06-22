@@ -364,16 +364,22 @@ def add_book_from_api():
         title = request.form.get('title')
         author = request.form.get('author')
         page_count = int(request.form.get('page_count', 0))
+        note = request.form.get('note')
+        rating = request.form.get('rating')
+        review = request.form.get('review')
 
         # Create the book and add it to the database
-        book = Book(
+        user_book = UserBook(
             title=title,
             author=author,
             page_count=page_count,
             status='To Read', # Default status
-            user_id=current_user.id
+            user_id=current_user.id,
+            note=note,
+            rating=int(rating) if rating else None,
+            review=review
         )
-        db.session.add(book)
+        db.session.add(user_book)
         db.session.commit()
         flash(f'"{title}" has been added to your reading list!', 'success')
     except Exception as e:
@@ -381,3 +387,15 @@ def add_book_from_api():
         flash(f'Error adding book: {e}', 'danger')
 
     return redirect(url_for('search_book'))
+
+@app.route('/feedback', methods=['GET', 'POST'])
+def feedback_page():
+    if request.method == 'POST':
+        username = request.form.get('username', '')
+        rating = request.form.get('rating', '')
+        feedback = request.form.get('feedback', '')
+        # Here you can save feedback to the database, send an email, or just print/log it
+        print(f"Feedback received from {username}: Rating={rating}, Feedback={feedback}")
+        # Optionally, flash a thank you message or redirect
+        return render_template('feedback.html', message="Thank you for your feedback!")
+    return render_template('feedback.html')

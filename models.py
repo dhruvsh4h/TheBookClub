@@ -227,4 +227,46 @@ class Book(db.Model):
         return f"{hours}h {mins}m" if hours > 0 else f"{mins}m"
     
     def __repr__(self):
-        return f'<Book {self.title} by {self.author}>'
+        return f'<Book {self.title} by {self.author}'
+
+class UserBook(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='To Read')  # 'To Read', 'Reading', 'Read'
+    rating = db.Column(db.Integer)  # New: star rating
+    review = db.Column(db.Text)     # New: review text
+    
+    # Relationships
+    user = db.relationship('User', backref='user_books', lazy=True)
+    book = db.relationship('Book', backref='user_books', lazy=True)
+    
+    def __init__(self, **kwargs):
+        super(UserBook, self).__init__(**kwargs)
+    
+    def mark_as_read(self):
+        """Mark the book as read for the user and calculate points"""
+        self.status = 'Read'
+        self.date_completed = datetime.utcnow()
+        
+        # Calculate and assign rating
+        if self.rating is None:
+            self.rating = 0  # Default to 0 if no rating given
+        
+        # Calculate points based on rating and book length
+        self.points = max(5, self.book.page_count // 10) + self.rating
+        
+        # Update user's total points
+        user = User.query.get(self.user_id)
+        if user:
+            user.total_points += self.points
+        
+        # Update book status and points
+        self.book.status = 'Read'
+        self.book.points += self.points
+        
+        db.session.commit()
+    
+    def __repr__(self):
+        return f'<UserBook user_id={self.user_id} book_id={self.book_id}>'
