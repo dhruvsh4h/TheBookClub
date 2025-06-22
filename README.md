@@ -1,6 +1,6 @@
 # BookQuest Tracker 📚✨
 
-A social and gamified web app to make reading a shared adventure with friends and family.
+A social and gamified web app to make reading a shared adventure.
 
 ## ✨ Core Features
 

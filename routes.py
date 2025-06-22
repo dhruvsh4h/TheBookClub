@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
-from models import User, FamilyGroup, Book
+from models import User, Group, Book, Feedback, UserBook
 from forms import LoginForm, RegistrationForm, CreateGroupForm, JoinGroupForm, AddBookForm, BookSearchForm
 import requests
 
@@ -65,8 +65,8 @@ def dashboard():
     # Get user's recent books
     recent_books = Book.query.filter_by(user_id=current_user.id).order_by(Book.date_added.desc()).limit(5).all()
     
-    # Get user's family groups
-    family_groups = current_user.family_groups.all()
+    # Get user's  groups
+    groups = current_user.groups.all()
     
     # Calculate enhanced reading stats
     total_books = Book.query.filter_by(user_id=current_user.id).count()
@@ -91,24 +91,24 @@ def dashboard():
     
     return render_template('dashboard.html', 
                          recent_books=recent_books, 
-                         family_groups=family_groups,
+                         groups=groups,
                          stats=stats)
 
-@app.route('/family-groups')
+@app.route('/groups')
 @login_required
-def family_groups():
-    """Display user's family groups"""
-    user_groups = current_user.family_groups.all()
-    return render_template('family_groups.html', groups=user_groups)
+def groups():
+    """Display user's groups"""
+    user_groups = current_user.groups.all()
+    return render_template('groups.html', groups=user_groups)
 
 @app.route('/create-group', methods=['GET', 'POST'])
 @login_required
 def create_group():
-    """Create a new family group"""
+    """Create a new group"""
     form = CreateGroupForm()
     if form.validate_on_submit():
-        # Use the correct FamilyGroup model
-        new_group = FamilyGroup(
+        # Use the correct Group model
+        new_group = Group(
             name=form.name.data,
             description=form.description.data,
             max_members=form.max_members.data,
@@ -134,12 +134,12 @@ def create_group():
 @app.route('/join-group', methods=['GET', 'POST'])
 @login_required
 def join_group():
-    """Join a family group using invite code"""
+    """Join a group using invite code"""
     form = JoinGroupForm()
     if form.validate_on_submit():
         try:
             # --- THIS IS THE CORRECTED LINE ---
-            group = FamilyGroup.query.filter_by(invite_code=form.invite_code.data).first()
+            group = Group.query.filter_by(invite_code=form.invite_code.data).first()
 
             if not group:
                 flash('Invalid invite code.', 'error')
@@ -161,13 +161,13 @@ def join_group():
 @app.route('/group/<int:group_id>')
 @login_required
 def group_detail(group_id):
-    """Display family group details and leaderboard"""
-    group = FamilyGroup.query.get_or_404(group_id)
+    """Display group details and leaderboard"""
+    group = Group.query.get_or_404(group_id)
     
     # Check if user is a member
     if current_user not in group.members:
         flash('You are not a member of this group.', 'error')
-        return redirect(url_for('family_groups'))
+        return redirect(url_for('groups'))
     
     # Get leaderboard
     leaderboard = group.get_leaderboard()
@@ -364,23 +364,28 @@ def add_book_from_api():
         title = request.form.get('title')
         author = request.form.get('author')
         page_count = int(request.form.get('page_count', 0))
-        note = request.form.get('note')
-        rating = request.form.get('rating')
-        review = request.form.get('review')
 
-        # Create the book and add it to the database
-        user_book = UserBook(
+        # Check if the book already exists for this user
+        book = Book.query.filter_by(
             title=title,
             author=author,
             page_count=page_count,
-            status='To Read', # Default status
-            user_id=current_user.id,
-            note=note,
-            rating=int(rating) if rating else None,
-            review=review
-        )
-        db.session.add(user_book)
-        db.session.commit()
+            user_id=current_user.id
+        ).first()
+
+        if not book:
+            # Create the book and add it to the database
+            book = Book(
+                title=title,
+                author=author,
+                page_count=page_count,
+                user_id=current_user.id
+            )
+            db.session.add(book)
+            db.session.commit()
+
+        # Optionally, you can also create a UserBook entry if you use that model for tracking
+        # For now, just flash success
         flash(f'"{title}" has been added to your reading list!', 'success')
     except Exception as e:
         db.session.rollback()
@@ -393,9 +398,13 @@ def feedback_page():
     if request.method == 'POST':
         username = request.form.get('username', '')
         rating = request.form.get('rating', '')
-        feedback = request.form.get('feedback', '')
-        # Here you can save feedback to the database, send an email, or just print/log it
-        print(f"Feedback received from {username}: Rating={rating}, Feedback={feedback}")
-        # Optionally, flash a thank you message or redirect
+        feedback_text = request.form.get('feedback', '')
+        feedback = Feedback(
+            username=username,
+            rating=int(rating) if rating else None,
+            feedback=feedback_text
+        )
+        db.session.add(feedback)
+        db.session.commit()
         return render_template('feedback.html', message="Thank you for your feedback!")
     return render_template('feedback.html')

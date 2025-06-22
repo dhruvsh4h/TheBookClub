@@ -4,10 +4,10 @@ from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 
-# Association table for many-to-many relationship between users and family groups
+# Association table for many-to-many relationship between users and groups
 group_members = db.Table('group_members',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('family_group_id', db.Integer, db.ForeignKey('family_group.id'), primary_key=True),
+    db.Column('group_id', db.Integer, db.ForeignKey('group.id'), primary_key=True),
     db.Column('joined_at', db.DateTime, default=datetime.utcnow)
 )
 
@@ -25,8 +25,8 @@ class User(UserMixin, db.Model):
     
     # Relationships
     books = db.relationship('Book', backref='reader', lazy=True, cascade='all, delete-orphan')
-    created_groups = db.relationship('FamilyGroup', backref='creator', lazy=True)
-    family_groups = db.relationship('FamilyGroup', secondary=group_members, 
+    created_groups = db.relationship('Group', backref='creator', lazy=True)
+    groups = db.relationship('Group', secondary=group_members, 
                                   back_populates='members', lazy='dynamic')
     # Will add achievements later after Achievement model is defined
     
@@ -39,10 +39,10 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
     
     def get_group_points(self, group_id):
-        """Get user's points within a specific family group"""
+        """Get user's points within a specific group"""
         group_books = Book.query.filter_by(user_id=self.id, status='Read').join(
             group_members, group_members.c.user_id == self.id
-        ).filter(group_members.c.family_group_id == group_id).all()
+        ).filter(group_members.c.group_id == group_id).all()
         return sum(book.points for book in group_books)
     
     def update_reading_streak(self, book_completion_date):
@@ -119,7 +119,7 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return f'<User {self.username}>'
 
-class FamilyGroup(db.Model):
+class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
@@ -130,7 +130,7 @@ class FamilyGroup(db.Model):
     
     # Relationships
     members = db.relationship('User', secondary=group_members, 
-                            back_populates='family_groups', lazy='dynamic')
+                            back_populates='groups', lazy='dynamic')
     
     def generate_invite_code(self):
         """Generate a unique invite code for the group"""
@@ -138,7 +138,7 @@ class FamilyGroup(db.Model):
         import random
         while True:
             code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
-            if not FamilyGroup.query.filter_by(invite_code=code).first():
+            if not Group.query.filter_by(invite_code=code).first():
                 self.invite_code = code
                 break
     
@@ -179,7 +179,7 @@ class FamilyGroup(db.Model):
         }
     
     def __repr__(self):
-        return f'<FamilyGroup {self.name}>'
+        return f'<Group {self.name}>'
 
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -270,3 +270,10 @@ class UserBook(db.Model):
     
     def __repr__(self):
         return f'<UserBook user_id={self.user_id} book_id={self.book_id}>'
+
+class Feedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50))
+    rating = db.Column(db.Integer)
+    feedback = db.Column(db.String(500))
+    created_at = db.Column(db.DateTime, server_default=db.func.now())

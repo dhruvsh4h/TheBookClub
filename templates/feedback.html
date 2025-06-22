@@ -6,10 +6,15 @@
 <div class="container mt-4" style="max-width: 500px;">
     <h2>Send Us Your Feedback</h2>
     <form method="POST" action="{{ url_for('feedback_page') }}">
-        <div class="mb-3">
-            <label for="username" class="form-label">Your Name (optional)</label>
-            <input type="text" class="form-control" id="username" name="username" maxlength="50" placeholder="Enter your name or nickname">
-        </div>
+        {% if current_user.is_authenticated %}
+            <!-- Store user id or username as hidden field -->
+            <input type="hidden" name="user_id" value="{{ current_user.id }}">
+        {% else %}
+            <div class="mb-3">
+                <label for="username" class="form-label">Your Name (optional)</label>
+                <input type="text" class="form-control" id="username" name="username" maxlength="50" placeholder="Enter your name or nickname">
+            </div>
+        {% endif %}
         <div class="mb-3">
             <label class="form-label">Rate Your Experience</label>
             <div class="star-rating mb-1"></div>

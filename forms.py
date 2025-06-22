@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, TextAreaField, IntegerField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, NumberRange, EqualTo
-from models import User, FamilyGroup
+from models import User, Group
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -56,7 +56,7 @@ class JoinGroupForm(FlaskForm):
     submit = SubmitField('Join Group')
     
     def validate_invite_code(self, invite_code):
-        group = FamilyGroup.query.filter_by(invite_code=invite_code.data).first()
+        group = Group.query.filter_by(invite_code=invite_code.data).first()
         if not group:
             raise ValueError('Invalid invite code.')
 

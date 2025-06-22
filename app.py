@@ -6,6 +6,7 @@ from flask_login import LoginManager
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 from dotenv import load_dotenv
+from flask_migrate import Migrate
 
 
 load_dotenv()
@@ -43,6 +44,7 @@ else:
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Initialize the app with the extension
 db.init_app(app)
+migrate = Migrate(app, db)
 
 # Set up Flask-Login
 login_manager = LoginManager()

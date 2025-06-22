@@ -4,130 +4,54 @@
 
 {% block content %}
 <div class="container">
-    <div id="versionBanner" class="alert alert-info alert-dismissible fade show" role="alert" style="display: none;">
-        <strong>Welcome to BookQuest v1.0!</strong> This is our first public release. We're excited to help you track your reading.
-        Your feedback is invaluable as we grow! <a href="#" id="feedbackLink" class="alert-link">Click here to share your thoughts.</a>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="dismissBanner()"></button>
-    </div>
-
-    <!-- Welcome Header -->
     <div class="row mb-4">
         <div class="col">
             <h2>Welcome back, {{ current_user.username }}!</h2>
-            <p class="text-muted">Here's your reading progress overview</p>
-        </div>
-    </div>
-    <!-- Version Banner -->
-    <!-- Welcome Header -->
-    <div class="row mb-4">
-        <div class="col">
-            <h2>Welcome back, {{ current_user.username }}!</h2>
-            <p class="text-muted">Here's your reading progress overview</p>
+            <div class="alert alert-primary text-center mb-0" style="font-size: 1.1rem;">
+                Here's your reading progress overview
+            </div>
         </div>
     </div>
 
-    <!-- Stats Cards -->
     <div class="row g-3 mb-4">
-        <div class="col-sm-6 col-xl-2">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="card-title mb-1">Total Points</h6>
-                            <h3 class="mb-0">{{ stats.total_points }}</h3>
-                        </div>
-                        <div>
-                            <i class="bi bi-trophy-fill" style="font-size: 1.8rem;"></i>
-                        </div>
-                    </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-primary text-white h-100 shadow-sm">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <i class="bi bi-trophy-fill mb-2" style="font-size: 2rem;"></i>
+                    <h6 class="card-title mb-1">Total Points</h6>
+                    <h3 class="mb-0 fw-bold">{{ stats.total_points }}</h3>
                 </div>
             </div>
         </div>
-        
-        <div class="col-sm-6 col-xl-2">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="card-title mb-1">Books Read</h6>
-                            <h3 class="mb-0">{{ stats.books_read }}</h3>
-                        </div>
-                        <div>
-                            <i class="bi bi-check-circle-fill" style="font-size: 1.8rem;"></i>
-                        </div>
-                    </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-primary text-white h-100 shadow-sm">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <i class="bi bi-check-circle-fill mb-2" style="font-size: 2rem;"></i>
+                    <h6 class="card-title mb-1">Books Read</h6>
+                    <h3 class="mb-0 fw-bold">{{ stats.books_read }}</h3>
                 </div>
             </div>
         </div>
-        
-        <div class="col-sm-6 col-xl-2">
-            <div class="card bg-warning text-white">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="card-title mb-1">Currently Reading</h6>
-                            <h3 class="mb-0">{{ stats.books_reading }}</h3>
-                        </div>
-                        <div>
-                            <i class="bi bi-book-half" style="font-size: 1.8rem;"></i>
-                        </div>
-                    </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-primary text-white h-100 shadow-sm">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <i class="bi bi-file-text mb-2" style="font-size: 2rem;"></i>
+                    <h6 class="card-title mb-1">Pages Read</h6>
+                    <h3 class="mb-0 fw-bold">{{ "{:,}".format(stats.total_pages) }}</h3>
                 </div>
             </div>
         </div>
-        
-        <div class="col-sm-6 col-xl-2">
-            <div class="card bg-info text-white">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="card-title mb-1">Reading Streak</h6>
-                            <h3 class="mb-0">{{ stats.current_streak }}</h3>
-                            <small>🔥 days</small>
-                        </div>
-                        <div>
-                            <i class="bi bi-calendar-check" style="font-size: 1.8rem;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-sm-6 col-xl-2">
-            <div class="card bg-secondary text-white">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="card-title mb-1">Pages Read</h6>
-                            <h3 class="mb-0">{{ "{:,}".format(stats.total_pages) }}</h3>
-                        </div>
-                        <div>
-                            <i class="bi bi-file-text" style="font-size: 1.8rem;"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-sm-6 col-xl-2">
-            <div class="card bg-dark text-white">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="card-title mb-1">This Year</h6>
-                            <h3 class="mb-0">{{ stats.books_this_year }}</h3>
-                            <small>books</small>
-                        </div>
-                        <div>
-                            <i class="bi bi-calendar3" style="font-size: 1.8rem;"></i>
-                        </div>
-                    </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-primary text-white h-100 shadow-sm">
+                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                    <i class="bi bi-calendar3 mb-2" style="font-size: 2rem;"></i>
+                    <h6 class="card-title mb-1">Books This Year</h6>
+                    <h3 class="mb-0 fw-bold">{{ stats.books_this_year }}</h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Monthly Progress & Streak Info -->
     <div class="row g-3 mb-4">
         <div class="col-md-6">
             <div class="card">
@@ -138,7 +62,7 @@
                         <span class="fw-bold">{{ stats.monthly_progress.percentage }}%</span>
                     </div>
                     <div class="progress" style="height: 10px;">
-                        <div class="progress-bar bg-success" style="width: {{ stats.monthly_progress.percentage|default(0, true)|int }}%"></div>
+                        <div class="progress-bar bg-success" style="width: {{ stats.monthly_progress.percentage|default(0, true)|int }}%;"></div>
                     </div>
                     {% if stats.monthly_progress.percentage >= 100 %}
                         <small class="text-success mt-1"><i class="bi bi-check-circle"></i> Goal achieved!</small>
@@ -146,7 +70,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
@@ -171,7 +95,6 @@
     </div>
 
     <div class="row">
-        <!-- Recent Books -->
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -212,16 +135,15 @@
             </div>
         </div>
 
-        <!-- Groups -->
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="bi bi-people"></i>Groups</h5>
-                    <a href="{{ url_for('family_groups') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                    <a href="{{ url_for('groups') }}" class="btn btn-sm btn-outline-primary">View All</a>
                 </div>
                 <div class="card-body">
-                    {% if family_groups %}
-                        {% for group in family_groups %}
+                    {% if groups %}
+                        {% for group in groups %}
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
                                     <h6 class="mb-0">
@@ -253,7 +175,6 @@
                 </div>
             </div>
 
-            <!-- Quick Actions -->
             <div class="card mt-3">
                 <div class="card-header">
                     <h5 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
@@ -271,7 +192,8 @@
             </div>
         </div>
     </div>
-     <script>
+
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const versionBanner = document.getElementById('versionBanner');
             const feedbackLink = document.getElementById('feedbackLink');
